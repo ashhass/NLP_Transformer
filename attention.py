@@ -13,10 +13,19 @@ seaborn.set_context(context="talk")
     Blocks:
       1. Input Encoder
       2. Positional Encoding
-      3. Attention
+      3. Attention ----------- HERE
       4. Layer Normalization
       5. Feed Forward Network
       6. MLP layer
+'''
+
+'''
+    Explaining the attention mechanism in steps:
+        1. We choose our query vector (a word/subword from the input sequence) 
+        2. We dot the query with every vector in the input sequence (to get the similarity between the chosen query and all the other words)
+        3. We then pass the result of the dot product through a softmax function to get its projection to numbers between 0 and 1
+        4. Then we multiply the weight from the previous step with its corresponding value vector from the input sequence
+        5. Finally we add all the resulting values (weight * value vector) to get the importance of the query to all other vectors in the input sequence
 '''
 def attention(q, k, v):
   d = q.size(-1)
