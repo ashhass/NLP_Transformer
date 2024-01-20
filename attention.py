@@ -27,8 +27,14 @@ seaborn.set_context(context="talk")
         4. Then we multiply the weight from the previous step with its corresponding value vector from the input sequence
         5. Finally we add all the resulting values (weight * value vector) to get the importance of the query to all other vectors in the input sequence
 '''
-def attention(q, k, v):
-  d = q.size(-1)
-  score = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(d)
-  attn_weight = F.softmax(score, dim=-1)
-  return torch.matmul(attn_weight, v), attn_weight
+def attention(q, k, v, mask=None):
+    d = q.size(-1)
+    score = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(d)
+
+    # for positions where mask is 0 which are the positions we want to mask, set the score value to something really small so it has minimal contribution to the weight value
+    if mask is not None:
+        score = score.masked_fill(mask==0, -1000)
+    
+    attn_weight = F.softmax(score, dim=-1)
+    
+    return torch.matmul(attn_weight, v), attn_weight
