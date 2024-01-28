@@ -16,6 +16,10 @@ class Tokenize(nn.Module):
   def __init__(self):
     super(Tokenize, self).__init__()
 
+
+
   def forward(self, input):
+
+
 
     return  
