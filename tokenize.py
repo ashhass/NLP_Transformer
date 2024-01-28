@@ -1,7 +1,15 @@
 import torch
 from torch import nn
 
-# Split input to tokens which can be word level or less
+'''
+    Blocks:
+      1. Input Tokenization ----------- HERE
+      2. Positional Encoding
+      3. Attention 
+      4. Layer Normalization
+      5. Feed Forward Network
+      6. MLP layer
+'''
 
 class Tokenize(nn.Module):
 
@@ -10,4 +18,4 @@ class Tokenize(nn.Module):
 
   def forward(self, input):
 
-    return
+    return  
