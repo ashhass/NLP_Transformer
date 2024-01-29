@@ -1,8 +1,8 @@
 '''
     Blocks:
-      1. Input Encoder
+      1. Input Tokenization
       2. Positional Encoding
-      3. Attention ----------- HERE
+      3. Attention -------------- HERE
       4. Layer Normalization
       5. Feed Forward Network
       6. MLP layer
@@ -18,6 +18,16 @@
 '''
 
 class Scaled_DotProduct_Attention(nn.Module):
+
+    '''
+        Input:  
+        
+            Dim()
+
+        Output:
+            1. Attention weights; Dim ()
+            2. The value vector after applying attention weights; Dim ()
+    '''
 
     def __init__(self):
         super(Scaled_DotProduct_Attention, self).__init__()
