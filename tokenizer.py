@@ -25,12 +25,17 @@ from transformers import GPT2Tokenizer, GPTNeoXTokenizerFast
 
 '''
 
-class Tokenize(nn.Module):
+class Tokenizer(nn.Module):
+
+  '''
+      Input: Any Text
+
+      Output: GPT2 integer tokens
+  '''
 
   def __init__(self):
-    super(Tokenize, self).__init__()
+    super(Tokenizer, self).__init__()
     self.tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
-
   
   def forward(self, input):
     return self.tokenizer(input)  
