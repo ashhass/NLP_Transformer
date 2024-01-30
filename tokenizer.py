@@ -1,3 +1,6 @@
+from libs import torch, nn, transformers
+from transformers import GPT2Tokenizer, GPTNeoXTokenizerFast
+
 '''
     Blocks:
       1. Input Tokenization ----------- HERE
@@ -26,9 +29,8 @@ class Tokenize(nn.Module):
 
   def __init__(self):
     super(Tokenize, self).__init__()
+    self.tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
 
-
-
+  
   def forward(self, input):
-
-    return   
+    return self.tokenizer(input)  

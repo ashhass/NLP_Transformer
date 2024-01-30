@@ -2,6 +2,7 @@ import torch
 import einops
 import seaborn
 import numpy as np
+import transformers
 import torch.nn as nn
 import math, copy, time
 import tqdm.auto as tqdm
