@@ -35,7 +35,7 @@ class Tokenizer(nn.Module):
 
   def __init__(self):
     super(Tokenizer, self).__init__()
-    self.tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
+    self.tokenizer = GPT2Tokenizer.from_pretrained('gpt2') 
   
   def forward(self, input):
     return self.tokenizer(input)  

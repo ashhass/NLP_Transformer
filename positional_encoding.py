@@ -13,5 +13,12 @@ from libs.py import *
 
 
 
-def positional_encoding():
-  return 
+class PositionalEmbedding(nn.Module):
+
+  def __init__(self):
+    super(PositionalEmbedding, self).__init__()
+
+
+  def forward(self):
+
+    return
