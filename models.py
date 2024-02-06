@@ -1,12 +1,14 @@
 from libs import *
 from trainer import *
 
+
 class BigramModel(nn.Module):
 
     def __init__(self, vocab_size):
         super(BigramModel, self).__init__()
         self.process = Trainer(context_length=10, batch_size=32, file='input.txt')
         self.token_embedding_table = nn.Embedding(vocab_size, vocab_size)
+        self.eval_iters = 200
 
     def forward(self, idx, targets=None):
         logits = self.token_embedding_table(idx)
@@ -32,20 +34,38 @@ class BigramModel(nn.Module):
 
         return idx
 
-    def train(self, model):
+    def estimate_loss(self, model):
+        out = {}
+        model.eval()
+        for split in ['train', 'val']:
+            losses = torch.zeros(self.eval_iters)
+            for k in range(self.eval_iters):
+                x, y = self.process.load_batch(split)
+                logits, loss = self(x, y)
+                losses[k] = loss.item()
+            out[split] = losses.mean()
+
+        model.train()
+        return out
+
+
+    def trainer(self, model, max_iters=5000, eval_interval=100):
+        model.train()
         optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3)
 
-        for steps in range(500):
-            x, y = self.process.load_batch('train')
+        for iter in range(max_iters):
+            if iter % eval_interval == 0:
+                losses = self.estimate_loss(model)
+                print(f'step {iter} : train loss {losses["train"]:.4f} val loss {losses["val"]:.4f}')
 
+            x, y = self.process.load_batch('train')
             logits, loss = self(x, y)
             optimizer.zero_grad(set_to_none=True)
             loss.backward()
             optimizer.step()
 
-            print(loss.item())
+        print(self.process.decode(self.generate(idx = torch.zeros((1, 1), dtype=torch.long), max_new_tokens=1000)[0].tolist()))
 
-        print(self.process.decode(self.generate(idx = torch.zeros((1, 1), dtype=torch.long), max_new_tokens=100)[0].tolist()))
 
 
 process = Trainer(8, 32, 'input.txt')
@@ -55,6 +75,4 @@ vocab_size = process.getDataLength()
 bigram = BigramModel(vocab_size=vocab_size)
 logits, loss = bigram(inputs, targets)
 
-# generated_text = process.decode(bigram.generate(idx = torch.zeros((1, 1), dtype=torch.long), max_new_tokens=100)[0].tolist())
-
-bigram.train(bigram) 
+bigram.trainer(bigram) 
