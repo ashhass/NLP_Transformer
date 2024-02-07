@@ -4,14 +4,23 @@ from trainer import *
 
 class BigramModel(nn.Module):
 
-    def __init__(self, vocab_size):
+    def __init__(self, vocab_size, n_embd):
         super(BigramModel, self).__init__()
         self.process = Trainer(context_length=10, batch_size=32, file='input.txt')
-        self.token_embedding_table = nn.Embedding(vocab_size, vocab_size)
+        self.token_embedding_table = nn.Embedding(vocab_size, n_embd)
+        self.position_embedding_table = nn.Embedding(context_length, n_embd)
+        self.linear = nn.Linear(n_embd, vocab_size)
         self.eval_iters = 200
 
     def forward(self, idx, targets=None):
-        logits = self.token_embedding_table(idx)
+        B, T = idx.shape
+
+        tokn_embds = self.token_embedding_table(idx)    
+        position_embds = self.position_embedding_table(torch.arange(T))
+        concat_token = tokn_embds + position_embds
+
+        logits = self.linear(concat_token)
+        
         if targets is None: loss = None
         else:
             B, T, C = logits.shape
@@ -72,7 +81,7 @@ process = Trainer(8, 32, 'input.txt')
 inputs, targets = process.load_batch('train')
 vocab_size = process.getDataLength()
 
-bigram = BigramModel(vocab_size=vocab_size)
+bigram = BigramModel(vocab_size=vocab_size, n_embd=32)
 logits, loss = bigram(inputs, targets)
 
 bigram.trainer(bigram) 

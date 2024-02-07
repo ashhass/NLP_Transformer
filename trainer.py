@@ -8,7 +8,7 @@ class Trainer():
         self.context_length = context_length
         self.batch_size = batch_size
         self.tokenizer = Tokenizer()
-        self.file = file
+        self.file = file    
 
     def load_data(self, input):
         with open(input, 'r') as f:
@@ -61,6 +61,3 @@ class Trainer():
         y = torch.stack([data[i+1 : self.context_length + i + 1] for i in ix])
         
         return x, y
-
-# process = Trainer(8, 4, 'input.txt')
-# print(process.load_batch('train')) 

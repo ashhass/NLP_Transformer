@@ -24,25 +24,31 @@ class Scaled_DotProduct_Attention(nn.Module):
     '''
         Input:  
         
-            Dim()
+            1. Batched sequence of token vectors; Dim(Batch Size, Sequence Length, Number of Channels(essentially the number of unique possible tokens))
 
         Output:
-            1. Attention weights; Dim ()
-            2. The value vector after applying attention weights; Dim ()
+            1. Attention weights; Dim (Batch Size, Sequence Length, Sequence Length)
+            2. The value vector after applying attention weights; Dim (Batch_Size, Sequence Length, Number of Channels)
     '''
 
-    def __init__(self):
-        super(Scaled_DotProduct_Attention, self).__init__()
+    def __init__(self, n_embd, head_size, context_length):
+        super().__init__()
         self.softmax = nn.Softmax(dim=-1)
-    
-    def forward(self, q, k, v, mask=None):
-        d = q.size(-1)
-        score = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(d)
-    
-        # for positions where mask is 0 which are the positions we want to mask, set the score value to something really small so it has minimal contribution to the weight value
-        if mask is not None:
-            score = score.masked_fill(mask==0, -1000)
-        
-        attn_weight = self.softmax(score)
-        
-        return torch.matmul(attn_weight, v), attn_weight
+        self.key = nn.Embedding(n_embd, head_size, bias=False)
+        self.query = nn.Embedding(n_embd, head_size, bias=False)
+        self.value = nn.Embedding(n_embd, head_size, bias=False)
+        self.register_buffer('tril', torch.tril(torch.ones(context_length, context_length)))
+
+    def forward(self, x, mask=None):
+        B, T, C = x.shape
+        k = self.key(x)
+        q = self.query(x)
+
+        weights = q @ k.transpose(-2, -1) * C ** -0.5
+        weights = weights.masked_fill(self.tril[:T, :T] == 0, float('-inf'))    
+        weights = self.softmax(weights)
+
+        v = self.value(x)
+        score = weights @ v
+
+        return score, weights
