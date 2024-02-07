@@ -1,4 +1,4 @@
-from libs.py import * 
+from libs import * 
 
 '''
     Blocks:
@@ -31,12 +31,12 @@ class Scaled_DotProduct_Attention(nn.Module):
             2. The value vector after applying attention weights; Dim (Batch_Size, Sequence Length, Number of Channels)
     '''
 
-    def __init__(self, n_embd, head_size, context_length):
+    def __init__(self, n_embd, context_length, head_size):
         super().__init__()
         self.softmax = nn.Softmax(dim=-1)
-        self.key = nn.Embedding(n_embd, head_size, bias=False)
-        self.query = nn.Embedding(n_embd, head_size, bias=False)
-        self.value = nn.Embedding(n_embd, head_size, bias=False)
+        self.key = nn.Linear(n_embd, head_size, bias=False)
+        self.query = nn.Linear(n_embd, head_size, bias=False)
+        self.value = nn.Linear(n_embd, head_size, bias=False)
         self.register_buffer('tril', torch.tril(torch.ones(context_length, context_length)))
 
     def forward(self, x, mask=None):
@@ -51,4 +51,20 @@ class Scaled_DotProduct_Attention(nn.Module):
         v = self.value(x)
         score = weights @ v
 
-        return score, weights
+
+        return score
+
+
+class MultiHeadAttention(nn.Module):
+
+    def __init__(self, n_embd, context_length, num_heads, head_size):
+        super().__init__()
+        self.proj = nn.Linear(n_embd, n_embd)
+        self.multiheads = nn.ModuleList([Scaled_DotProduct_Attention(n_embd, context_length, head_size) for _ in range(num_heads)])
+
+    def forward(self, x):
+
+        out = torch.cat([h(x) for h in self.multiheads], dim=-1) 
+        out = self.proj(out)
+        
+        return out

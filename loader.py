@@ -1,10 +1,10 @@
 from tokenizer import Tokenizer
 from libs import torch
 
-class Trainer():
+class DataLoader():
 
     def __init__(self, context_length, batch_size, file):
-        super(Trainer, self).__init__() 
+        super(DataLoader, self).__init__() 
         self.context_length = context_length
         self.batch_size = batch_size
         self.tokenizer = Tokenizer()
