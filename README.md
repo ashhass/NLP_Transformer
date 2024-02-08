@@ -1,3 +1,3 @@
-# Algorithm_Implementation
+# Transformer_Implementation
 
-Practice implementing different machine learning algorithms from scratch.
+Practice implementing transformer architecture from scratch.
