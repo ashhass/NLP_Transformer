@@ -1,7 +1,3 @@
 # Transformer_Implementation
 
-Practice implementing transformer architecture from scratch.
-
-Two versions:
-  1. Using textual data
-  2. Using visual data
+Implementing decoder part of the transformer architecture for next character prediction from scratch
